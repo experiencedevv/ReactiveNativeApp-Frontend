@@ -9,23 +9,38 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
-import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 import styles from './LoginScreen.styles';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [perfil, setPerfil] = useState('Estudante');
-  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    login(perfil);
-    navigation.replace(perfil === 'Professor' ? 'AdminDashboard' : 'PostsList');
-  };
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post('http://localhost:3000/login', {
+        email,
+        senha,
+      });
 
-  const alternarPerfil = () => {
-    setPerfil((prev) => (prev === 'Estudante' ? 'Professor' : 'Estudante'));
+      const { token, perfil } = response.data;
+
+      if (token && perfil) {
+        // Aqui você pode salvar o token (AsyncStorage, SecureStore, etc.)
+        navigation.replace(perfil === 'professor' ? 'AdminDashboard' : 'PostsList');
+      } else {
+        Alert.alert('Erro', 'Resposta inválida do servidor.');
+      }
+    } catch (error) {
+      Alert.alert('Falha no login', 'Verifique suas credenciais e tente novamente.');
+      console.error('Erro no login:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,13 +75,9 @@ export default function LoginScreen({ navigation }) {
             secureTextEntry
           />
 
-          <TouchableOpacity onPress={alternarPerfil}>
-            <Text style={styles.perfilToggle}>Perfil: {perfil} (toque para alternar)</Text>
-          </TouchableOpacity>
-
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-              <Text style={styles.primaryButtonText}>Entrar</Text>
+            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
+              <Text style={styles.primaryButtonText}>{loading ? 'Entrando...' : 'Entrar'}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -83,6 +94,7 @@ export default function LoginScreen({ navigation }) {
     </KeyboardAvoidingView>
   );
 }
+
 
 
 

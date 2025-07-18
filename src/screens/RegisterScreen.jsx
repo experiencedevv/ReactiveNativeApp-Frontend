@@ -1,4 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -11,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { cadastrarUsuario } from "../services/api.js";
 import styles from './RegisterScreen.styles';
 
 export default function RegisterScreen({ navigation }) {
@@ -19,16 +19,25 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [perfil, setPerfil] = useState('aluno');
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
+    if (!nome || !email || !senha) {
+      Alert.alert('Preencha todos os campos');
+      return;
+    }
+
     try {
+      setLoading(true);
       const novoUsuario = { nome, email, senha, perfil };
-      cadastrarUsuario(novoUsuario);
+      await axios.post('http://localhost:3000/usuario', novoUsuario);
       Alert.alert('Cadastro realizado com sucesso!');
       navigation.replace('Login');
     } catch (error) {
       Alert.alert('Erro ao cadastrar', 'Verifique os dados e tente novamente.');
-      console.error(error);
+      console.error('Erro no cadastro:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,8 +93,14 @@ export default function RegisterScreen({ navigation }) {
             </Picker>
           </View>
 
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleRegister}>
-            <Text style={styles.secondaryButtonText}>Cadastrar</Text>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={handleRegister}
+            disabled={loading}
+          >
+            <Text style={styles.secondaryButtonText}>
+              {loading ? 'Cadastrando...' : 'Cadastrar'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -94,4 +109,5 @@ export default function RegisterScreen({ navigation }) {
     </KeyboardAvoidingView>
   );
 }
+
 
