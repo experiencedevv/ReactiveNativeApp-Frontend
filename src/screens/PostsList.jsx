@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import {
+  Dimensions,
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -9,7 +11,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import PostCard from '../components/PostCard';
 import StudentMenu from '../components/StudentMenu';
-import styles from './PostsList.styles';
 
 export default function PostsList() {
   const [posts, setPosts] = useState([]);
@@ -45,7 +46,7 @@ export default function PostsList() {
           {posts.map((post) => (
             <PostCard
               key={post._id}
-              idCampo={post._id}
+              id={post._id}
               titulo={post.titulo}
               descricao={post.descricao}
             />
@@ -58,6 +59,37 @@ export default function PostsList() {
   );
 }
 
+const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  banner: {
+    width: width,
+    height: width / 3, // altura proporcional para 1440x480
+  },
+  content: {
+    width: '90%',
+    maxWidth: 800,
+    marginTop: 32,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
+});
 
 
 

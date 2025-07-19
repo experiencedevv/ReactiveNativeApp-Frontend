@@ -1,101 +1,137 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
-  Dimensions,
-  Image,
-  Modal,
-  Text,
-  TouchableOpacity,
   View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import AdminMenu from '../components/AdminMenu';
+import PostCard from '../components/PostCard';
 import { useAuth } from '../contexts/AuthContext';
-import styles from './AdminMenu.styles';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-
-export default function AdminMenu() {
+export default function AdminDashboard() {
+  const { user, token } = useAuth();
   const navigation = useNavigation();
-  const { logout } = useAuth();
-  const [isMobile, setIsMobile] = useState(SCREEN_WIDTH < 600);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener('change', ({ window }) => {
-      setIsMobile(window.width < 600);
-    });
-    return () => subscription?.remove();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (!user || user.perfil !== 'professor') {
+        Alert.alert('Acesso negado', 'Apenas professores têm acesso a esta área.');
+        navigation.replace('Login');
+        return;
+      }
 
-  const handleLogout = () => {
-    logout();
-    navigation.replace('Login');
-  };
+      const fetchPosts = async () => {
+        try {
+          const response = await axios.get('http://localhost:3000/posts', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setPosts(response.data);
+        } catch (error) {
+          console.error('Erro ao buscar posts:', error);
+          Alert.alert('Erro', 'Não foi possível carregar os posts.');
+        }
+      };
 
-  const menuItems = [
-    { title: 'Home', route: 'AdminDashboard' },
-    { title: 'Professores', route: 'TeacherList' },
-    { title: 'Estudantes', route: 'StudentList' },
-  ];
+      fetchPosts();
+    }, [user, token])
+  );
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/logo-learnplus-white.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <AdminMenu />
 
-      {isMobile ? (
-        <>
-          <TouchableOpacity onPress={() => setMenuVisible(true)}>
-            <Text style={styles.menuIcon}>☰</Text>
-          </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Painel do Professor</Text>
 
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={menuVisible}
-            onRequestClose={() => setMenuVisible(false)}
-          >
             <TouchableOpacity
-              style={styles.modalOverlay}
-              onPress={() => setMenuVisible(false)}
+              style={styles.button}
+              onPress={() => navigation.navigate('PostCreate')}
             >
-              <View style={styles.modalMenu}>
-                {menuItems.map((item) => (
-                  <TouchableOpacity
-                    key={item.route}
-                    onPress={() => {
-                      setMenuVisible(false);
-                      navigation.navigate(item.route);
-                    }}
-                    style={styles.modalItem}
-                  >
-                    <Text style={styles.modalText}>{item.title}</Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity onPress={handleLogout} style={styles.modalItem}>
-                  <Text style={styles.modalText}>Sair</Text>
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.buttonText}>Novo Post</Text>
             </TouchableOpacity>
-          </Modal>
-        </>
-      ) : (
-        <View style={styles.links}>
-          {menuItems.map((item) => (
-            <TouchableOpacity key={item.route} onPress={() => navigation.navigate(item.route)}>
-              <Text style={styles.link}>{item.title}</Text>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity onPress={handleLogout}>
-            <Text style={styles.link}>Sair</Text>
-          </TouchableOpacity>
+          </View>
+
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard
+                key={post._id}
+                idCampo={post._id}
+                titulo={post.titulo}
+                descricao={post.descricao}
+                exibirControles
+              />
+            ))
+          ) : (
+            <Text style={styles.noPosts}>Nenhum post cadastrado.</Text>
+          )}
         </View>
-      )}
+
+        <Text style={styles.footer}>© 2025 by LearnPlus</Text>
+      </ScrollView>
     </View>
   );
 }
+
+const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  content: {
+    width: '90%',
+    maxWidth: 800,
+    marginTop: 32,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  button: {
+    backgroundColor: '#000',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  noPosts: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
+});
+
 
 
 

@@ -2,13 +2,13 @@ import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import AdminMenu from '../components/AdminMenu';
 import UserForm from '../components/UserForm';
 import { atualizarUsuario } from '../services/api';
-import styles from './TeacherEdit.styles';
 
 export default function TeacherEdit() {
   const route = useRoute();
@@ -16,11 +16,12 @@ export default function TeacherEdit() {
 
   const [initialData] = useState({ nome, email });
 
-  console.log("teste de id", route.params);
+  console.log("teste de id",route.params)
 
   const handleSubmit = (data) => {
-    atualizarUsuario(id, data);
+    atualizarUsuario(id,data)
     console.log('Professor atualizado:', data);
+    // Aqui você poderá chamar uma API para atualizar o professor
   };
 
   return (
@@ -39,4 +40,19 @@ export default function TeacherEdit() {
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
+});
 

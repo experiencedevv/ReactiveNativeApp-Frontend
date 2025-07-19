@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
   Image,
   Dimensions,
   KeyboardAvoidingView,
@@ -11,35 +12,40 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import axios from 'axios';
-import styles from './LoginScreen.styles';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
-      const response = await axios.post('http://localhost:3000/login', {
-        email,
-        senha,
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha }),
       });
 
-      const { token, perfil } = response.data;
+      if (!response.ok) {
+        throw new Error('Credenciais inválidas');
+      }
 
-      if (token && perfil) {
-        // Aqui você pode salvar o token (AsyncStorage, SecureStore, etc.)
-        navigation.replace(perfil === 'professor' ? 'AdminDashboard' : 'PostsList');
+      const data = await response.json();
+
+      // login global via context
+      login(data); // exemplo: data = { token, nome, email, perfil }
+
+      if (data.perfil === 'professor') {
+        navigation.replace('AdminDashboard');
       } else {
-        Alert.alert('Erro', 'Resposta inválida do servidor.');
+        navigation.replace('PostsList');
       }
     } catch (error) {
-      Alert.alert('Falha no login', 'Verifique suas credenciais e tente novamente.');
-      console.error('Erro no login:', error);
-    } finally {
-      setLoading(false);
+      console.error('Erro ao fazer login:', error);
+      Alert.alert('Erro no login', error.message || 'Tente novamente');
     }
   };
 
@@ -76,8 +82,8 @@ export default function LoginScreen({ navigation }) {
           />
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
-              <Text style={styles.primaryButtonText}>{loading ? 'Entrando...' : 'Entrar'}</Text>
+            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+              <Text style={styles.primaryButtonText}>Entrar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -94,6 +100,7 @@ export default function LoginScreen({ navigation }) {
     </KeyboardAvoidingView>
   );
 }
+
 
 
 
