@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { loginUsuario } from '../services/api';
+import ChatBot from '../components/chatBot';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -99,6 +100,7 @@ export default function LoginScreen({ navigation }) {
 
         <Text style={styles.footer}>© 2025 by LearnPlus</Text>
       </ScrollView>
+      <ChatBot/>
     </KeyboardAvoidingView>
   );
 }

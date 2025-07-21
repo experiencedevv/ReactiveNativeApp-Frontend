@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import AdminMenu from '../components/AdminMenu';
-import PostCard from '../components/PostCard';
+import PostCardProfessor from '../components/PostCardProfessor.jsx';
 import { deletarPost } from '../services/api';
 
 export default function AdminDashboard() {
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
           </View>
 
           {posts.map((post) => (
-            <PostCard
+            <PostCardProfessor
               key={post._id}
               idCampo={post._id}
               titulo={post.titulo}

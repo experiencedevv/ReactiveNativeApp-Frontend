@@ -1,5 +1,4 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dimensions,
   Image,
@@ -10,6 +9,7 @@ import {
 } from 'react-native';
 import PostCard from '../components/PostCard';
 import StudentMenu from '../components/StudentMenu';
+import axios from 'axios';
 
 export default function PostsList() {
   const [posts, setPost] = useState([]);
@@ -24,28 +24,28 @@ export default function PostsList() {
     <View style={styles.container}>
       <StudentMenu />
 
-      {/* Banner fora do conteúdo centralizado */}
-      <Image
-        source={require('../../assets/banner-admin.png')}
-        style={styles.banner}
-        resizeMode="cover"
-      />
-
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Lista de Posts</Text>
+          <Image
+            source={require('../../assets/banner-admin.png')}
+            style={styles.banner}
+            resizeMode="cover"
+          />
 
-          {posts.map((post) => (
-            <PostCard
-              key={post._id}
-              id={post._id}
-              titulo={post.titulo}
-              descricao={post.descricao}
-            />
-          ))}
-        </View>
+        
+          <View style={styles.content}>
+            <Text style={styles.title}>Lista de Posts</Text>
 
-        <Text style={styles.footer}>© 2025 by LearnPlus</Text>
+            {posts.map((post) => (
+              <PostCard
+                key={post._id}
+                id={post._id}
+                titulo={post.titulo}
+                descricao={post.descricao}
+              />
+            ))}
+          </View>
+
+          <Text style={styles.footer}>©️ 2025 by LearnPlus</Text>
       </ScrollView>
     </View>
   );

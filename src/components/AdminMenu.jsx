@@ -32,7 +32,6 @@ export default function AdminMenu() {
   };
 
   const menuItems = [
-    { title: 'Home', route: 'PostsList' },
     { title: 'Professores', route: 'TeacherList' },
     { title: 'Estudantes', route: 'StudentList' },
     { title: 'Admin', route: 'AdminDashboard' },
