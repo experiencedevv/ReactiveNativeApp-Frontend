@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function PostCard({ idCampo, titulo, descricao, aoDeletar }) {
+export default function PostCard({ idCampo, titulo, descricao, isAdminView = false, aoDeletar }) {
   const navigation = useNavigation();
+  const { perfil } = useAuth(); // Pegando perfil do contexto
 
   const handleDeletar = (idCampo) => {
-    aoDeletar?.(idCampo);
+    aoDeletar(idCampo);
   };
 
   return (
@@ -20,34 +22,42 @@ export default function PostCard({ idCampo, titulo, descricao, aoDeletar }) {
       <Text style={styles.description}>{descricao}</Text>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('PostDetails', {
-          idCampo,
-          titulo,
-          descricao
-        })}
+        onPress={() =>
+          navigation.navigate('PostDetails', {
+            idCampo,
+            titulo,
+            descricao,
+          })
+        }
       >
         <Text style={styles.readMore}>Ler mais</Text>
       </TouchableOpacity>
 
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => navigation.navigate('PostEdit', {
-            idCampo,
-            titulo,
-            descricao
-          })}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
+      {isAdminView && (
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() =>
+              navigation.navigate('PostEdit', {
+                idCampo,
+                titulo,
+                descricao,
+              })
+            }
+          >
+            <Text style={styles.editText}>Editar</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleDeletar(idCampo)}
-        >
-          <Text style={styles.deleteText}>Excluir</Text>
-        </TouchableOpacity>
-      </View>
+          {perfil === 'professor' && (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDeletar(idCampo)}
+            >
+              <Text style={styles.deleteText}>Excluir</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -98,4 +108,6 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
+
+
 

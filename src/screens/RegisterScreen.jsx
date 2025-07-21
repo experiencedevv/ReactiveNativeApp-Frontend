@@ -19,29 +19,20 @@ export default function RegisterScreen({ navigation }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [perfil, setPerfil] = useState('aluno');
+  const [perfil, setPerfil] = useState('aluno'); // valor padrão
+
 
   const handleRegister = async () => {
-    if (!nome || !email || !senha) {
-      Alert.alert('Preencha todos os campos');
-      return;
-    }
-
     try {
-      const novoUsuario = { nome, email, senha, perfil };
-
-      const response = await cadastrarUsuario(novoUsuario); // await incluído
-
-      if (response?.status === 201 || response?.status === 200) {
-        Alert.alert('Cadastro realizado com sucesso!');
-        navigation.replace('Login');
-      } else {
-        throw new Error('Erro inesperado ao cadastrar');
-      }
+      const novoUsuario = { nome, email, senha, perfil }
+      cadastrarUsuario(novoUsuario)
+      Alert.alert('Cadastro realizado com sucesso!');
+      navigation.replace('Login');
     } catch (error) {
-      console.error('Erro ao cadastrar usuário:', error);
-      Alert.alert('Erro ao cadastrar', error?.response?.data?.message || 'Tente novamente.');
+      Alert.alert('Erro ao cadastrar', 'Verifique os dados e tente novamente.');
+      console.error(error);
     }
+
   };
 
   return (
@@ -180,6 +171,9 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 });
+
+
+
 
 
 

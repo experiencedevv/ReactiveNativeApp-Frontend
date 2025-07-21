@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
+import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
   return (

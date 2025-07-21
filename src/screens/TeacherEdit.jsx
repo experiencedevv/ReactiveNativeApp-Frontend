@@ -1,30 +1,23 @@
-import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
   View,
-  Alert,
+  ScrollView,
+  Text,
+  StyleSheet,
 } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import AdminMenu from '../components/AdminMenu';
 import UserForm from '../components/UserForm';
-import { atualizarUsuario } from '../services/api';
 
 export default function TeacherEdit() {
   const route = useRoute();
-  const { nome, email, id } = route.params || {};
+  const { nome, email } = route.params || {};
 
   const [initialData] = useState({ nome, email });
 
-  const handleSubmit = async (data) => {
-    try {
-      await atualizarUsuario(id, data);
-      Alert.alert('Sucesso', 'Professor atualizado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao atualizar professor:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar o professor.');
-    }
+  const handleSubmit = (data) => {
+    console.log('Professor atualizado:', data);
+    // Aqui você poderá chamar uma API para atualizar o professor
   };
 
   return (
@@ -58,5 +51,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
 
 

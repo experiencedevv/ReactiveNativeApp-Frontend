@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-  Dimensions,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    Modal,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -32,9 +32,10 @@ export default function AdminMenu() {
   };
 
   const menuItems = [
-    { title: 'Home', route: 'AdminDashboard' },
+    { title: 'Home', route: 'PostsList' },
     { title: 'Professores', route: 'TeacherList' },
     { title: 'Estudantes', route: 'StudentList' },
+    { title: 'Admin', route: 'AdminDashboard' },
   ];
 
   return (
@@ -144,6 +145,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
+
 
 
 

@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -7,39 +8,30 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import axios from 'axios';
 import PostCard from '../components/PostCard';
 import StudentMenu from '../components/StudentMenu';
 
 export default function PostsList() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPost] = useState([]);
 
-  const carregarPosts = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/posts');
-      setPosts(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar posts:', error);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      carregarPosts();
-    }, [])
-  );
+  useEffect(() => {
+    axios.get('http://localhost:3000/posts').then((response) => {
+      setPost(response.data);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
       <StudentMenu />
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Image
-          source={require('../../assets/banner-admin.png')}
-          style={styles.banner}
-          resizeMode="cover"
-        />
 
+      {/* Banner fora do conteúdo centralizado */}
+      <Image
+        source={require('../../assets/banner-admin.png')}
+        style={styles.banner}
+        resizeMode="cover"
+      />
+
+      <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.content}>
           <Text style={styles.title}>Lista de Posts</Text>
 
@@ -66,13 +58,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  banner: {
+    width: '100%',
+    height: width / 3, // mantém a proporção
+  },
   scroll: {
     alignItems: 'center',
     paddingBottom: 40,
-  },
-  banner: {
-    width: width,
-    height: width / 3, // altura proporcional para 1440x480
   },
   content: {
     width: '90%',
@@ -90,6 +82,12 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
+
+
+
+
+
 
 
 

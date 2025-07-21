@@ -5,26 +5,19 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
 import AdminMenu from '../components/AdminMenu';
 import UserForm from '../components/UserForm';
-import { atualizarUsuario } from '../services/api';
 
 export default function StudentEdit() {
   const route = useRoute();
-  const { nome, email, id } = route.params || {};
+  const { nome, email } = route.params || {};
 
   const [initialData] = useState({ nome, email });
 
-  const handleSubmit = async (data) => {
-    try {
-      await atualizarUsuario(id, data);
-      Alert.alert('Sucesso', 'Aluno atualizado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao atualizar aluno:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar o aluno.');
-    }
+  const handleSubmit = (data) => {
+    console.log('Aluno atualizado:', data);
+    // Aqui você poderá chamar uma API para atualizar o aluno
   };
 
   return (
@@ -58,6 +51,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
 
 
 

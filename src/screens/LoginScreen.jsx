@@ -13,38 +13,38 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { loginUsuario } from '../services/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const { login } = useAuth();
-
   const handleLogin = async () => {
+
+
     try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, senha }),
-      });
+      const login = { email, senha }
+      const response = await loginUsuario(login);
 
-      if (!response.ok) {
-        throw new Error('Credenciais inválidas');
-      }
+      if (response?.status === 201 || response?.status === 200) {
+        Alert.alert('Cadastro realizado com sucesso!');
+        console.log("retorno do daddo de acesso",response.data.perfil)
+        console.log("teste",response.data.perfil == 'professor')
 
-      const data = await response.json();
 
-      login(data); // { token, nome, email, perfil }
+        if (response.data.perfil == 'professor') {
+          navigation.navigate("AdminDashboard");
+        } else {
+          navigation.replace('PostsList');
+        }
 
-      if (data.perfil === 'professor') {
-        navigation.replace('AdminDashboard');
       } else {
-        navigation.replace('PostsList');
+        Alert.alert('Erro no login')
       }
+
     } catch (error) {
       console.error('Erro ao fazer login:', error);
-      Alert.alert('Erro no login', error.message || 'Tente novamente');
+      Alert('Erro no login', error.message || 'Tente novamente');
     }
   };
 
@@ -54,12 +54,14 @@ export default function LoginScreen({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.scroll}>
+        {/* Logo */}
         <Image
           source={require('../../assets/logo-learnplus.png')}
           style={styles.logo}
           resizeMode="contain"
         />
 
+        {/* Card de login */}
         <View style={styles.card}>
           <Text style={styles.title}>Login</Text>
 
@@ -80,6 +82,7 @@ export default function LoginScreen({ navigation }) {
             secureTextEntry
           />
 
+          {/* Botões */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
               <Text style={styles.primaryButtonText}>Entrar</Text>
@@ -146,31 +149,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonContainer: {
-    marginTop: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   primaryButton: {
     backgroundColor: '#000',
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
     borderRadius: 20,
-    marginBottom: 12,
-    alignItems: 'center',
   },
   primaryButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 16,
   },
   secondaryButton: {
     borderColor: '#000',
     borderWidth: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
     borderRadius: 20,
-    alignItems: 'center',
   },
   secondaryButtonText: {
     color: '#000',
     fontWeight: '600',
-    fontSize: 16,
   },
   footer: {
     marginTop: 40,
@@ -178,6 +179,16 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 });
+
+
+
+
+
+
+
+
+
+
 
 
 

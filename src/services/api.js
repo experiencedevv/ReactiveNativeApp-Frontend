@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Alert } from "react-native";
 
 export async function ObterPost() {
     try {
@@ -22,7 +23,7 @@ async function ObterPostPorId(id) {
 
 export async function cadastrarPost(dados) {
     try {
-        const response = await axios.post(`http://localhost:3000/posts`,dados);
+        const response = await axios.post("http://localhost:3000/posts",dados);
         console.log('Usuários (Axios):', response.data);
         return response.data
     } catch (error) {
@@ -53,11 +54,24 @@ export async function deletarPost(id) {
 export async function cadastrarUsuario(dados) {
     try {
         console.log("teste",dados)
-        const response = await axios.post(`http://localhost:3000/usuario`,dados);
+        const response = await axios.post("http://localhost:3000/usuario",dados);
         console.log('Usuários (Axios):', response.data);
-        return response.data
+        return response
     } catch (error) {
         console.error('Erro ao buscar posts (Axios):', error);
+        alert('Email já cadastrado')
+    }
+}
+
+export async function loginUsuario(dados) {
+    try {
+        console.log("teste",dados)
+        const response = await axios.post("http://localhost:3000/login",dados);
+        console.log('Usuários (Axios):', response.data);
+        return response
+    } catch (error) {
+        console.error('Erro ao buscar posts (Axios):', error);
+        alert('Email ou senha incorretos', error.message || 'Tente novamente')
     }
 }
 

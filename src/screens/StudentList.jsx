@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,43 +12,40 @@ import AdminMenu from '../components/AdminMenu';
 
 export default function StudentList() {
   const navigation = useNavigation();
-  const [usuarios, setUsuarios] = useState([]);
 
-  const carregarUsuarios = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/usuario');
-      setUsuarios(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os usuários.');
-    }
-  };
+  const [usuarios, setUsuario] = useState([])
 
-  useEffect(() => {
-    carregarUsuarios();
-  }, []);
+  // get all
+  useEffect(()=>{
+    axios.get("http://localhost:3000/usuario").then((response)=>{
+        setUsuario(response.data)})
 
-  const excluirAluno = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3000/usuario/${id}`);
-      carregarUsuarios();
-    } catch (error) {
-      Alert.alert('Erro ao excluir', 'Verifique a conexão ou tente novamente.');
-      console.error(error);
-    }
-  };
+  },[])
+
+
+  const listaAluno = usuarios.filter((aluno) => aluno.tipoUsuario == "Estudante")
+
+
+
+
+
 
   return (
     <View style={styles.container}>
       <AdminMenu />
+
       <ScrollView contentContainerStyle={styles.scroll}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.voltar}>Voltar</Text>
+        </TouchableOpacity>
+
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Lista de Usuários</Text>
+          <Text style={styles.title}>Lista de Alunos</Text>
           <TouchableOpacity
             style={styles.cadastrarButton}
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => navigation.navigate('StudentCreate')}
           >
-            <Text style={styles.cadastrarText}>Cadastrar Usuário</Text>
+            <Text style={styles.cadastrarText}>Cadastrar Aluno</Text>
           </TouchableOpacity>
         </View>
 
@@ -57,24 +53,15 @@ export default function StudentList() {
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderCell}>Nome</Text>
             <Text style={styles.tableHeaderCell}>E-mail</Text>
-            <Text style={styles.tableHeaderCellAcoes}>Ações</Text>
           </View>
 
-          {usuarios.map((usuario) => (
-            <View key={usuario._id} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{usuario.nome}</Text>
-              <Text style={styles.tableCell}>{usuario.email}</Text>
-              <View style={styles.acoes}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('StudentEdit', { id: usuario._id, nome: usuario.nome, email: usuario.email })}
-                >
-                  <Text style={styles.acaoEditar}>Editar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => excluirAluno(usuario._id)}>
-                  <Text style={styles.acaoExcluir}>Excluir</Text>
-                </TouchableOpacity>
-              </View>
+
+          {listaAluno.map((aluno) => (
+            <View key={aluno.id} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{aluno.nome}</Text>
+              <Text style={styles.tableCell}>{aluno.email}</Text>
             </View>
+            
           ))}
         </View>
 
@@ -85,17 +72,32 @@ export default function StudentList() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  scroll: { alignItems: 'center', paddingBottom: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  voltar: {
+    alignSelf: 'flex-start',
+    marginTop: 24,
+    marginBottom: 16,
+    marginLeft: '5%',
+    color: '#000',
+  },
   headerRow: {
     width: '90%',
     maxWidth: 800,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 24,
-    marginTop: 24,
   },
-  title: { fontSize: 24, fontWeight: 'bold' },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   cadastrarButton: {
     borderWidth: 1,
     borderColor: '#000',
@@ -103,25 +105,35 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
   },
-  cadastrarText: { color: '#000' },
-  table: { width: '90%', maxWidth: 800 },
+  cadastrarText: {
+    color: '#000',
+  },
+  table: {
+    width: '90%',
+    maxWidth: 800,
+  },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#ddd',
     padding: 12,
   },
-  tableHeaderCell: { flex: 2, fontWeight: 'bold' },
-  tableHeaderCellAcoes: { flex: 1, fontWeight: 'bold', textAlign: 'center' },
+  tableHeaderCell: {
+    flex: 1,
+    fontWeight: 'bold',
+  },
   tableRow: {
     flexDirection: 'row',
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
-    alignItems: 'center',
   },
-  tableCell: { flex: 2, color: '#333' },
-  acoes: { flex: 1, flexDirection: 'row', justifyContent: 'space-around' },
-  acaoEditar: { color: '#007AFF', fontWeight: '600' },
-  acaoExcluir: { color: '#FF3B30', fontWeight: '600' },
-  footer: { fontSize: 12, color: '#999', marginTop: 40 },
+  tableCell: {
+    flex: 1,
+    color: '#333',
+  },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
 });

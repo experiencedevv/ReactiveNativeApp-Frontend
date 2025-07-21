@@ -1,15 +1,16 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
-import StudentMenu from '../components/StudentMenu';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
+import AdminMenu from '../components/AdminMenu';
+import StudentMenu from '../components/StudentMenu';
 
 export default function PostDetails() {
   const navigation = useNavigation();
@@ -21,8 +22,7 @@ export default function PostDetails() {
 
   return (
     <View style={styles.container}>
-      <StudentMenu />
-      
+      {perfil === 'aluno' ? <StudentMenu /> : <AdminMenu />}
 
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.content}>
@@ -77,5 +77,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
 
 

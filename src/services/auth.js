@@ -4,20 +4,20 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null); // Armazena todo o objeto do usuário
+  const [perfil, setPerfil] = useState(null);
 
-  const login = async (newToken, userData) => {
+  const login = async (newToken, perfilUsuario) => {
     setToken(newToken);
-    setUser(userData); // Armazena todo o usuário (incluindo perfil, nome, etc.)
+    setPerfil(perfilUsuario);
   };
 
   const logout = () => {
     setToken(null);
-    setUser(null);
+    setPerfil(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, perfil, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

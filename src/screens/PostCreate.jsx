@@ -10,29 +10,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { cadastrarPost } from '../services/api';
 import AdminMenu from '../components/AdminMenu';
+import { cadastrarPost } from '../services/api';
 
 export default function PostCreate() {
   const navigation = useNavigation();
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
 
-  const handleSalvar = async () => {
+  const handleSalvar = () => {
     if (!titulo || !descricao) {
       Alert.alert('Atenção', 'Preencha todos os campos.');
       return;
     }
 
-    try {
-      await cadastrarPost({ titulo, descricao });
-      Alert.alert('Sucesso', 'Post criado com sucesso!');
-      navigation.goBack();
-    } catch (error) {
-      console.error('Erro ao criar post:', error);
-      Alert.alert('Erro', 'Não foi possível criar o post. Tente novamente.');
-    }
+    // Aqui você pode chamar a API futuramente
+    const novoPost = {titulo,descricao}
+    cadastrarPost(novoPost)
+    Alert.alert('Post criado com sucesso!');
+
+    navigation.goBack();
   };
 
   return (
@@ -67,37 +64,9 @@ export default function PostCreate() {
             numberOfLines={6}
             textAlignVertical="top"
           />
-
           <TouchableOpacity style={styles.button} onPress={handleSalvar}>
             <Text style={styles.buttonText}>Salvar</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.chatContainer}>
-          <WebView
-            source={{
-              html: `
-                <!DOCTYPE html>
-                <html>
-                  <head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <script src="https://cdn.jsdelivr.net/gh/logspace-ai/langflow-embedded-chat@v1.0.7/dist/build/static/js/bundle.min.js"></script>
-                  </head>
-                  <body style="margin:0;padding:0;">
-                    <langflow-chat
-                      window_title="ChatBot - langflow"
-                      flow_id="d4f669f9-becb-464b-8e77-7be9463af8db"
-                      host_url="https://astra.datastax.com">
-                    </langflow-chat>
-                  </body>
-                </html>
-              `,
-            }}
-            originWhitelist={['*']}
-            javaScriptEnabled
-            domStorageEnabled
-            startInLoadingState
-          />
         </View>
 
         <Text style={styles.footer}>© 2025 by LearnPlus</Text>
@@ -109,8 +78,14 @@ export default function PostCreate() {
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  scroll: { alignItems: 'center', paddingBottom: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
   content: {
     width: '90%',
     maxWidth: 800,
@@ -119,9 +94,20 @@ const styles = StyleSheet.create({
     padding: 24,
     borderRadius: 12,
   },
-  voltar: { color: '#000', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 24 },
-  label: { fontSize: 14, marginBottom: 6, color: '#000' },
+  voltar: {
+    color: '#000',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 6,
+    color: '#000',
+  },
   input: {
     backgroundColor: '#ddd',
     borderRadius: 6,
@@ -144,14 +130,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 20,
   },
-  buttonText: { color: '#fff', fontWeight: '600' },
-  chatContainer: {
-    width: '90%',
-    height: 400,
-    marginTop: 30,
-    maxWidth: 800,
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
-  footer: { fontSize: 12, color: '#999', marginTop: 40 },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
 });
 
 

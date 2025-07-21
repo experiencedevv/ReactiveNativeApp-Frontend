@@ -16,25 +16,18 @@ import { atualizarPost } from '../services/api';
 export default function PostEdit() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { idCampo: initialId, titulo: initialTitulo, descricao: initialDescricao } = route.params || {};
+  const {idCampo: initialId, titulo: initialTitulo, descricao: initialDescricao } = route.params || {};
 
+  const [id, setId] = useState(initialId || '');
   const [titulo, setTitulo] = useState(initialTitulo || '');
   const [descricao, setDescricao] = useState(initialDescricao || '');
 
-  const handleSalvar = async () => {
-    if (!titulo || !descricao) {
-      Alert.alert('Atenção', 'Preencha todos os campos.');
-      return;
-    }
-
-    try {
-      await atualizarPost(initialId, { titulo, descricao });
-      Alert.alert('Post atualizado com sucesso!');
-      navigation.goBack();
-    } catch (error) {
-      console.error('Erro ao atualizar post:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar o post.');
-    }
+  const handleSalvar = (id) => {
+    const dados = {titulo,descricao}
+    // Aqui você pode integrar com sua API futuramente
+    atualizarPost(id,dados)
+    Alert.alert('Post atualizado com sucesso!');
+    navigation.goBack(null);
   };
 
   return (
@@ -70,7 +63,7 @@ export default function PostEdit() {
             textAlignVertical="top"
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleSalvar}>
+          <TouchableOpacity style={styles.button} onPress={() => handleSalvar(initialId)}>
             <Text style={styles.buttonText}>Salvar</Text>
           </TouchableOpacity>
         </View>
@@ -146,6 +139,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
 
 
 

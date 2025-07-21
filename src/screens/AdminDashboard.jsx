@@ -1,80 +1,61 @@
-import React, { useCallback, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
+  Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
-  Dimensions,
+  Text,
   TouchableOpacity,
-  Alert,
+  View,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+
 import AdminMenu from '../components/AdminMenu';
 import PostCard from '../components/PostCard';
-import { useAuth } from '../contexts/AuthContext';
+import { deletarPost } from '../services/api';
 
 export default function AdminDashboard() {
-  const { token } = useAuth();
   const navigation = useNavigation();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPost] = useState([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!token) {
-        Alert.alert('Acesso negado', 'Você precisa estar autenticado.');
-        navigation.replace('Login');
-        return;
-      }
-
-      const fetchPosts = async () => {
-        try {
-          const response = await axios.get('http://localhost:3000/posts', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setPosts(response.data);
-        } catch (error) {
-          console.error('Erro ao buscar posts:', error);
-          Alert.alert('Erro', 'Não foi possível carregar os posts.');
-        }
-      };
-
-      fetchPosts();
-    }, [token])
-  );
+  useEffect(() => {
+    axios.get('http://localhost:3000/posts').then((response) => {
+      setPost(response.data);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
       <AdminMenu />
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Painel de Atividades</Text>
+        <Image
+          source={require('../../assets/banner-admin.png')}
+          style={styles.banner}
+          resizeMode="cover"
+        />
 
+        <View style={styles.content}>
+          <View style={styles.headerRow}>
+            <Text style={styles.title}>Lista de Posts</Text>
             <TouchableOpacity
-              style={styles.button}
+              style={styles.newPostButton}
               onPress={() => navigation.navigate('PostCreate')}
             >
-              <Text style={styles.buttonText}>Novo Post</Text>
+              <Text style={styles.newPostText}>+ Novo Post</Text>
             </TouchableOpacity>
           </View>
 
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <PostCard
-                key={post._id}
-                idCampo={post._id}
-                titulo={post.titulo}
-                descricao={post.descricao}
-                exibirControles
-              />
-            ))
-          ) : (
-            <Text style={styles.noPosts}>Nenhum post cadastrado.</Text>
-          )}
+          {posts.map((post) => (
+            <PostCard
+              key={post._id}
+              idCampo={post._id}
+              titulo={post.titulo}
+              descricao={post.descricao}
+              aoDeletar={(id) => deletarPost(id)}
+            />
+          ))}
         </View>
 
         <Text style={styles.footer}>© 2025 by LearnPlus</Text>
@@ -94,12 +75,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 40,
   },
+  banner: {
+    width: width,
+    height: width / 3,
+  },
   content: {
     width: '90%',
     maxWidth: 800,
     marginTop: 32,
   },
-  header: {
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -109,21 +94,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  button: {
+  newPostButton: {
     backgroundColor: '#000',
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderRadius: 20,
   },
-  buttonText: {
+  newPostText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 14,
-  },
-  noPosts: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 20,
   },
   footer: {
     fontSize: 12,
@@ -131,6 +110,15 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
+
+
+
+
+
+
+
+
 
 
 
