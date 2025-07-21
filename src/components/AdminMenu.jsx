@@ -15,7 +15,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function AdminMenu() {
   const navigation = useNavigation();
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const [isMobile, setIsMobile] = useState(SCREEN_WIDTH < 600);
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -30,11 +30,6 @@ export default function AdminMenu() {
     logout();
     navigation.replace('Login');
   };
-
-  // ⚠️ Verifica se usuário está logado e se tem perfil de professor
-  if (!user || user.perfil !== 'professor') {
-    return null; // ou use navigation.replace('PostsList'); se quiser redirecionar
-  }
 
   const menuItems = [
     { title: 'Home', route: 'AdminDashboard' },

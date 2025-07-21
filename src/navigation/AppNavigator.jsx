@@ -1,7 +1,8 @@
 // src/navigation/AppNavigator.js
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+
 import { useAuth } from '../contexts/AuthContext';
 
 // Telas públicas
@@ -29,15 +30,18 @@ const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { user, token } = useAuth();
+  const [perfil, setPerfil] = useState(null);
 
-  const isAuthenticated = !!token;
-
-  const perfil = user?.perfil;
+  useEffect(() => {
+    if (user?.perfil) {
+      setPerfil(user.perfil);
+    }
+  }, [user]);
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!isAuthenticated ? (
+        {!token || !perfil ? (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
@@ -64,6 +68,7 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+
 
 
 

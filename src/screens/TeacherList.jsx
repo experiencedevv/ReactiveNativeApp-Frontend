@@ -21,6 +21,7 @@ export default function TeacherList() {
       setUsuarios(response.data);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os usuários.');
     }
   };
 
@@ -28,29 +29,27 @@ export default function TeacherList() {
     carregarUsuarios();
   }, []);
 
-  const excluirProfessor = async (id) => {
+  const excluirUsuario = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/usuario/${id}`);
       carregarUsuarios();
     } catch (error) {
-      Alert.alert('Erro ao excluir professor', 'Verifique a conexão ou tente novamente.');
+      Alert.alert('Erro ao excluir usuário', 'Verifique a conexão ou tente novamente.');
       console.error(error);
     }
   };
-
-  const listaProfessores = usuarios.filter((usuario) => usuario.perfil === 'professor');
 
   return (
     <View style={styles.container}>
       <AdminMenu />
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Lista de Professores</Text>
+          <Text style={styles.title}>Lista de Usuários</Text>
           <TouchableOpacity
             style={styles.cadastrarButton}
             onPress={() => navigation.navigate('Register')}
           >
-            <Text style={styles.cadastrarText}>Cadastrar Professor</Text>
+            <Text style={styles.cadastrarText}>Cadastrar Usuário</Text>
           </TouchableOpacity>
         </View>
 
@@ -61,17 +60,23 @@ export default function TeacherList() {
             <Text style={styles.tableHeaderCellAcoes}>Ações</Text>
           </View>
 
-          {listaProfessores.map((professor) => (
-            <View key={professor._id} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{professor.nome}</Text>
-              <Text style={styles.tableCell}>{professor.email}</Text>
+          {usuarios.map((usuario) => (
+            <View key={usuario._id} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{usuario.nome}</Text>
+              <Text style={styles.tableCell}>{usuario.email}</Text>
               <View style={styles.acoes}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('TeacherEdit', { id: professor._id })}
+                  onPress={() =>
+                    navigation.navigate('TeacherEdit', {
+                      id: usuario._id,
+                      nome: usuario.nome,
+                      email: usuario.email,
+                    })
+                  }
                 >
                   <Text style={styles.acaoEditar}>Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => excluirProfessor(professor._id)}>
+                <TouchableOpacity onPress={() => excluirUsuario(usuario._id)}>
                   <Text style={styles.acaoExcluir}>Excluir</Text>
                 </TouchableOpacity>
               </View>
@@ -126,5 +131,6 @@ const styles = StyleSheet.create({
   acaoExcluir: { color: '#FF3B30', fontWeight: '600' },
   footer: { fontSize: 12, color: '#999', marginTop: 40 },
 });
+
 
 

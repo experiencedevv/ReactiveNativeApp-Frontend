@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import AdminMenu from '../components/AdminMenu';
 import UserForm from '../components/UserForm';
@@ -16,12 +17,14 @@ export default function TeacherEdit() {
 
   const [initialData] = useState({ nome, email });
 
-  console.log("teste de id",route.params)
-
-  const handleSubmit = (data) => {
-    atualizarUsuario(id,data)
-    console.log('Professor atualizado:', data);
-    // Aqui você poderá chamar uma API para atualizar o professor
+  const handleSubmit = async (data) => {
+    try {
+      await atualizarUsuario(id, data);
+      Alert.alert('Sucesso', 'Professor atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar professor:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar o professor.');
+    }
   };
 
   return (
@@ -55,4 +58,5 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
+
 

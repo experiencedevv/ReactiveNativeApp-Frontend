@@ -15,14 +15,14 @@ import PostCard from '../components/PostCard';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function AdminDashboard() {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
-      if (!user || user.perfil !== 'professor') {
-        Alert.alert('Acesso negado', 'Apenas professores têm acesso a esta área.');
+      if (!token) {
+        Alert.alert('Acesso negado', 'Você precisa estar autenticado.');
         navigation.replace('Login');
         return;
       }
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
       };
 
       fetchPosts();
-    }, [user, token])
+    }, [token])
   );
 
   return (
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.title}>Painel do Professor</Text>
+            <Text style={styles.title}>Painel de Atividades</Text>
 
             <TouchableOpacity
               style={styles.button}

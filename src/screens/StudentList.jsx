@@ -21,6 +21,7 @@ export default function StudentList() {
       setUsuarios(response.data);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os usuários.');
     }
   };
 
@@ -33,24 +34,22 @@ export default function StudentList() {
       await axios.delete(`http://localhost:3000/usuario/${id}`);
       carregarUsuarios();
     } catch (error) {
-      Alert.alert('Erro ao excluir aluno', 'Verifique a conexão ou tente novamente.');
+      Alert.alert('Erro ao excluir', 'Verifique a conexão ou tente novamente.');
       console.error(error);
     }
   };
-
-  const listaAluno = usuarios.filter((aluno) => aluno.perfil === 'aluno');
 
   return (
     <View style={styles.container}>
       <AdminMenu />
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Lista de Alunos</Text>
+          <Text style={styles.title}>Lista de Usuários</Text>
           <TouchableOpacity
             style={styles.cadastrarButton}
             onPress={() => navigation.navigate('Register')}
           >
-            <Text style={styles.cadastrarText}>Cadastrar Aluno</Text>
+            <Text style={styles.cadastrarText}>Cadastrar Usuário</Text>
           </TouchableOpacity>
         </View>
 
@@ -61,17 +60,17 @@ export default function StudentList() {
             <Text style={styles.tableHeaderCellAcoes}>Ações</Text>
           </View>
 
-          {listaAluno.map((aluno) => (
-            <View key={aluno._id} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{aluno.nome}</Text>
-              <Text style={styles.tableCell}>{aluno.email}</Text>
+          {usuarios.map((usuario) => (
+            <View key={usuario._id} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{usuario.nome}</Text>
+              <Text style={styles.tableCell}>{usuario.email}</Text>
               <View style={styles.acoes}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('StudentEdit', { id: aluno._id })}
+                  onPress={() => navigation.navigate('StudentEdit', { id: usuario._id, nome: usuario.nome, email: usuario.email })}
                 >
                   <Text style={styles.acaoEditar}>Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => excluirAluno(aluno._id)}>
+                <TouchableOpacity onPress={() => excluirAluno(usuario._id)}>
                   <Text style={styles.acaoExcluir}>Excluir</Text>
                 </TouchableOpacity>
               </View>
@@ -86,7 +85,6 @@ export default function StudentList() {
 }
 
 const styles = StyleSheet.create({
-  // ... estilos iguais aos anteriores, mantendo scroll, headerRow, etc.
   container: { flex: 1, backgroundColor: '#fff' },
   scroll: { alignItems: 'center', paddingBottom: 40 },
   headerRow: {

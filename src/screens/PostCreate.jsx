@@ -11,24 +11,28 @@ import {
   View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import AdminMenu from '../components/AdminMenu';
 import { cadastrarPost } from '../services/api';
+import AdminMenu from '../components/AdminMenu';
 
 export default function PostCreate() {
   const navigation = useNavigation();
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     if (!titulo || !descricao) {
       Alert.alert('Atenção', 'Preencha todos os campos.');
       return;
     }
 
-    const novoPost = { titulo, descricao };
-    cadastrarPost(novoPost);
-    Alert.alert('Post criado com sucesso!');
-    navigation.goBack();
+    try {
+      await cadastrarPost({ titulo, descricao });
+      Alert.alert('Sucesso', 'Post criado com sucesso!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Erro ao criar post:', error);
+      Alert.alert('Erro', 'Não foi possível criar o post. Tente novamente.');
+    }
   };
 
   return (
@@ -69,7 +73,6 @@ export default function PostCreate() {
           </TouchableOpacity>
         </View>
 
-        {/* Chatbot integrado via WebView */}
         <View style={styles.chatContainer}>
           <WebView
             source={{
@@ -91,8 +94,8 @@ export default function PostCreate() {
               `,
             }}
             originWhitelist={['*']}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
+            javaScriptEnabled
+            domStorageEnabled
             startInLoadingState
           />
         </View>

@@ -7,15 +7,11 @@ import {
   View,
 } from 'react-native';
 
-
-
-
-
-export default function PostCard({ idCampo, titulo, descricao, isAdminView = false, aoDeletar }) {
+export default function PostCard({ idCampo, titulo, descricao, aoDeletar }) {
   const navigation = useNavigation();
 
   const handleDeletar = (idCampo) => {
-    aoDeletar(idCampo)
+    aoDeletar?.(idCampo);
   };
 
   return (
@@ -33,28 +29,25 @@ export default function PostCard({ idCampo, titulo, descricao, isAdminView = fal
         <Text style={styles.readMore}>Ler mais</Text>
       </TouchableOpacity>
 
-      {isAdminView && (
-        <View style={styles.actions}>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => navigation.navigate('PostEdit', {
-              idCampo,
-              titulo,
-              descricao
-            })}
-          >
-            <Text style={styles.editText}>Editar</Text>
-          </TouchableOpacity>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate('PostEdit', {
+            idCampo,
+            titulo,
+            descricao
+          })}
+        >
+          <Text style={styles.editText}>Editar</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.deleteButton}
-            //onPress={() => alert("pegar o id do post e colocar na API")}
-            onPress={() => handleDeletar(idCampo)}
-          >
-            <Text style={styles.deleteText}>Excluir</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeletar(idCampo)}
+        >
+          <Text style={styles.deleteText}>Excluir</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
