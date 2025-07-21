@@ -1,5 +1,5 @@
 // src/navigation/AppNavigator.js
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -29,25 +29,19 @@ import AdminDashboard from '../screens/AdminDashboard';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-  const { user, token } = useAuth();
-  const [perfil, setPerfil] = useState(null);
-
-  useEffect(() => {
-    if (user?.perfil) {
-      setPerfil(user.perfil);
-    }
-  }, [user]);
+  const { token } = useAuth();
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!token || !perfil ? (
+        {!token ? (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>
-        ) : perfil === 'professor' ? (
+        ) : (
           <>
+            {/* Acesso irrestrito após login */}
             <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
             <Stack.Screen name="PostCreate" component={PostCreate} />
             <Stack.Screen name="PostEdit" component={PostEdit} />
@@ -57,11 +51,6 @@ export default function AppNavigator() {
             <Stack.Screen name="TeacherEdit" component={TeacherEdit} />
             <Stack.Screen name="StudentList" component={StudentList} />
             <Stack.Screen name="StudentEdit" component={StudentEdit} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="PostsList" component={PostsList} />
-            <Stack.Screen name="PostDetails" component={PostDetails} />
           </>
         )}
       </Stack.Navigator>
